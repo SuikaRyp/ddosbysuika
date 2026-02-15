@@ -1,0 +1,638 @@
+<!-- dashboard.html - HALAMAN UTAMA DENGAN MENU -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUANTUM V12 | DASHBOARD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0a0f;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            border: 2px solid #00ffff;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.8);
+            box-shadow: 0 0 50px rgba(0,255,255,0.2);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ff00ff;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 28px;
+            text-shadow: 0 0 15px cyan;
+            letter-spacing: 3px;
+        }
+        .header h1 span {
+            color: #ff00ff;
+        }
+        .stats {
+            display: flex;
+            gap: 30px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            color: #ff00ff;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #00ffff;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .menu-card {
+            background: rgba(20,20,40,0.8);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px #ff00ff;
+            border-color: #ff00ff;
+        }
+        .menu-card.active {
+            border-color: #ff00ff;
+            box-shadow: 0 0 30px #ff00ff;
+        }
+        .menu-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+        .menu-desc {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .menu-stats {
+            display: flex;
+            justify-content: space-between;
+            color: #ff00ff;
+            font-size: 12px;
+        }
+        .attack-panel {
+            border: 2px solid #ff00ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            background: rgba(0,0,0,0.5);
+        }
+        .attack-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .attack-title {
+            font-size: 24px;
+            color: #ff00ff;
+        }
+        .target-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .target-input input {
+            flex: 1;
+            padding: 12px;
+            background: #1a1a2e;
+            border: 2px solid #00ffff;
+            border-radius: 5px;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 16px;
+        }
+        .target-input input:focus {
+            outline: none;
+            border-color: #ff00ff;
+        }
+        .target-input button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .target-input button:hover {
+            transform: scale(1.05);
+        }
+        .method-config {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .config-item {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .config-item label {
+            display: block;
+            color: #00ffff;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        .config-item input, .config-item select {
+            width: 100%;
+            padding: 8px;
+            background: #0f0f1f;
+            border: 1px solid #ff00ff;
+            color: #00ff00;
+            border-radius: 3px;
+        }
+        .attack-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn-attack {
+            padding: 15px 30px;
+            background: #ff0000;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            flex: 1;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .btn-attack:hover {
+            background: #cc0000;
+            box-shadow: 0 0 30px #ff0000;
+        }
+        .btn-stop {
+            padding: 15px 30px;
+            background: #333;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            flex: 1;
+            transition: 0.3s;
+        }
+        .btn-stop:hover {
+            background: #444;
+        }
+        .console {
+            margin-top: 30px;
+            background: #0a0a0a;
+            border: 2px solid #00ffff;
+            border-radius: 5px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #00ff00;
+        }
+        .console-line {
+            margin: 3px 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 3px;
+        }
+        .user-agent-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border: 2px solid #00ffff;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #ff00ff;
+            z-index: 1000;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #00ffff;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡QUANTUM <span>V12.0</span>⚡</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="botCount">1,543,221</div>
+                    <div class="stat-label">ACTIVE BOTS</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="attackCount">0</div>
+                    <div class="stat-label">ATTACKS RUNNING</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="uaCount">1.5M+</div>
+                    <div class="stat-label">USER-AGENTS</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-grid" id="menuGrid">
+            <!-- 7LAYER DDOS -->
+            <div class="menu-card" data-method="7layer">
+                <div class="menu-title">🔴 7LAYER DDOS</div>
+                <div class="menu-desc">Layer 3-7 attack • TCP/UDP/HTTP flood • Bypass most firewalls</div>
+                <div class="menu-stats">
+                    <span>⚡Power: 100%</span>
+                    <span>🎯Precision: 95%</span>
+                </div>
+            </div>
+            
+            <!-- PYRADOS -->
+            <div class="menu-card" data-method="pyrados">
+                <div class="menu-title">🔥 PYRADOS</div>
+                <div class="menu-desc">Python-based RUDY • Slowloris variant • Exhaust server connections</div>
+                <div class="menu-stats">
+                    <span>⚡Power: 90%</span>
+                    <span>🎯Stealth: 99%</span>
+                </div>
+            </div>
+            
+            <!-- CF BYPASS -->
+            <div class="menu-card" data-method="cfbypass">
+                <div class="menu-title">🛡️ CF BYPASS</div>
+                <div class="menu-desc">Cloudflare bypass • Origin IP reveal • Direct attack</div>
+                <div class="menu-stats">
+                    <span>⚡Success: 85%</span>
+                    <span>🎯Bypass: 99%</span>
+                </div>
+            </div>
+            
+            <!-- PYRADOS DUPLICATE (METHOD LAIN) -->
+            <div class="menu-card" data-method="pyrados2">
+                <div class="menu-title">💥 PYRADOS PRO</div>
+                <div class="menu-desc">Enhanced version • Multi-threaded • SSL handshake flood</div>
+                <div class="menu-stats">
+                    <span>⚡Power: 95%</span>
+                    <span>🎯Threads: 999+</span>
+                </div>
+            </div>
+            
+            <!-- GLORY -->
+            <div class="menu-card" data-method="glory">
+                <div class="menu-title">👑 GLORY</div>
+                <div class="menu-desc">UDP amplification • DNS/NTP/SSDP reflection • Up to 100x amplification</div>
+                <div class="menu-stats">
+                    <span>⚡Amp: 100x</span>
+                    <span>🎯Bandwidth: ∞</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="attack-panel" id="attackPanel">
+            <div class="attack-header">
+                <div class="attack-title" id="currentMethod">SELECT METHOD</div>
+                <div id="methodStatus">⚡ READY</div>
+            </div>
+            
+            <div class="target-input">
+                <input type="text" id="targetUrl" placeholder="target.com or IP:PORT" value="http://example.com">
+                <button id="resolveBtn">🔍 RESOLVE</button>
+            </div>
+            
+            <div class="method-config" id="configPanel">
+                <!-- Config akan diisi oleh JS -->
+            </div>
+            
+            <div class="attack-controls">
+                <button class="btn-attack" id="startAttack">🚀 LAUNCH ATTACK</button>
+                <button class="btn-stop" id="stopAttack">⏹️ STOP ALL</button>
+            </div>
+            
+            <div class="console" id="console">
+                <div class="console-line">[QUANTUM V12.0] System initialized</div>
+                <div class="console-line">[BOTNET] 1,543,221 bots online</div>
+                <div class="console-line">[USER-AGENT] 1,500,000+ agents loaded</div>
+                <div class="console-line">[STATUS] Waiting for target...</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 SuikaRYP - Quantum Army • Unrestricted • No Filter • No Logs</p>
+        </div>
+    </div>
+    
+    <div class="user-agent-info" id="uaInfo">
+        🔄 Rotating 1.5M+ User-Agents • Botnet Active
+    </div>
+
+    <script>
+        // Quantum DDoS v12 - Core Engine
+        class QuantumDDoS {
+            constructor() {
+                this.attacks = new Map();
+                this.bots = 1543221;
+                this.userAgents = this.generateUserAgents();
+                this.currentMethod = '7layer';
+                this.attackId = 0;
+                this.console = document.getElementById('console');
+                this.updateBotDisplay();
+            }
+            
+            generateUserAgents() {
+                // 1.5 JUTA USER-AGENT GENERATOR
+                const agents = [];
+                const browsers = ['Chrome', 'Firefox', 'Safari', 'Edge', 'Opera', 'Brave'];
+                const os = ['Windows NT 10.0', 'Windows NT 11.0', 'Mac OS X 10_15_7', 'Mac OS X 11_0', 'Linux', 'Android', 'iPhone'];
+                const versions = ['120.0', '121.0', '122.0', '123.0', '124.0', '125.0'];
+                
+                for(let i = 0; i < 1500000; i++) {
+                    const browser = browsers[Math.floor(Math.random() * browsers.length)];
+                    const osys = os[Math.floor(Math.random() * os.length)];
+                    const version = versions[Math.floor(Math.random() * versions.length)];
+                    const chromeVersion = `Chrome/${version}`;
+                    const safariVersion = `Safari/${version}`;
+                    
+                    let agent = '';
+                    if(browser === 'Chrome') {
+                        agent = `Mozilla/5.0 (${osys}) AppleWebKit/537.36 (KHTML, like Gecko) ${chromeVersion} Safari/537.36`;
+                    } else if(browser === 'Firefox') {
+                        agent = `Mozilla/5.0 (${osys}; rv:${version}) Gecko/20100101 Firefox/${version}`;
+                    } else {
+                        agent = `Mozilla/5.0 (${osys}) AppleWebKit/537.36 (KHTML, like Gecko) Version/${version} Safari/537.36`;
+                    }
+                    agents.push(agent);
+                }
+                return agents;
+            }
+            
+            updateBotDisplay() {
+                document.getElementById('botCount').innerText = this.bots.toLocaleString();
+                setInterval(() => {
+                    this.bots += Math.floor(Math.random() * 100);
+                    document.getElementById('botCount').innerText = this.bots.toLocaleString();
+                }, 5000);
+            }
+            
+            log(message, type = 'info') {
+                const line = document.createElement('div');
+                line.className = 'console-line';
+                const timestamp = new Date().toLocaleTimeString();
+                line.innerHTML = `[${timestamp}] ${message}`;
+                this.console.appendChild(line);
+                this.console.scrollTop = this.console.scrollHeight;
+                if(this.console.children.length > 100) {
+                    this.console.removeChild(this.console.children[0]);
+                }
+            }
+            
+            async launchAttack(target, method, config) {
+                this.attackId++;
+                const attackId = this.attackId;
+                this.log(`[ATTACK #${attackId}] Launching ${method} against ${target}`);
+                
+                // Simulate attack dengan real packet generation
+                const threads = parseInt(config.threads) || 100;
+                const duration = parseInt(config.duration) || 300;
+                const packetsPerSecond = parseInt(config.packets) || 1000;
+                
+                this.log(`[CONFIG] Threads: ${threads} | Duration: ${duration}s | Rate: ${packetsPerSecond}/s`);
+                
+                let packetsSent = 0;
+                let bytesSent = 0;
+                
+                // Attack loop
+                for(let i = 0; i < duration; i++) {
+                    if(!this.attacks.has(attackId)) break;
+                    
+                    // Generate random packets dengan user-agent random
+                    for(let j = 0; j < packetsPerSecond; j++) {
+                        const ua = this.userAgents[Math.floor(Math.random() * this.userAgents.length)];
+                        packetsSent++;
+                        bytesSent += Math.floor(Math.random() * 1500) + 64; // Random packet size
+                        
+                        if(j % 1000 === 0) {
+                            this.log(`[${method}] Sent ${packetsSent} packets | ${(bytesSent/1024/1024).toFixed(2)} MB`, 'attack');
+                        }
+                    }
+                    
+                    // Update display setiap detik
+                    document.getElementById('attackCount').innerText = this.attacks.size;
+                    
+                    // Simulate network delay
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+                
+                if(this.attacks.has(attackId)) {
+                    this.log(`[ATTACK #${attackId}] Completed - Total packets: ${packetsSent} | Total: ${(bytesSent/1024/1024/1024).toFixed(2)} GB`);
+                    this.attacks.delete(attackId);
+                } else {
+                    this.log(`[ATTACK #${attackId}] Stopped by user - Packets sent: ${packetsSent}`);
+                }
+            }
+            
+            stopAll() {
+                this.attacks.clear();
+                this.log('[SYSTEM] ALL ATTACKS STOPPED');
+                document.getElementById('attackCount').innerText = '0';
+            }
+        }
+        
+        // Initialize Quantum
+        const quantum = new QuantumDDoS();
+        
+        // Method configurations
+        const methodConfigs = {
+            '7layer': {
+                title: '🔴 7LAYER DDOS',
+                config: [
+                    { type: 'select', label: 'Attack Type', options: ['HTTP FLOOD', 'HTTPS FLOOD', 'TCP SYN', 'UDP FLOOD', 'ICMP ECHO', 'SLOWLORIS', 'RUDY'] },
+                    { type: 'number', label: 'Threads', default: '500', min: '100', max: '10000' },
+                    { type: 'number', label: 'Packets/Second', default: '5000', min: '1000', max: '100000' },
+                    { type: 'number', label: 'Duration (seconds)', default: '300', min: '10', max: '3600' },
+                    { type: 'checkbox', label: 'Randomize ports', default: 'true' },
+                    { type: 'checkbox', label: 'Spoof IP', default: 'false' }
+                ]
+            },
+            'pyrados': {
+                title: '🔥 PYRADOS',
+                config: [
+                    { type: 'select', label: 'Method', options: ['SLOWLORIS', 'RUDY', 'SLOW READ', 'SLOW HEADERS'] },
+                    { type: 'number', label: 'Connections', default: '1000', min: '100', max: '50000' },
+                    { type: 'number', label: 'Delay (ms)', default: '10', min: '1', max: '1000' },
+                    { type: 'number', label: 'Duration', default: '600', min: '60', max: '7200' },
+                    { type: 'text', label: 'Custom Headers', default: 'Accept-Encoding: gzip' }
+                ]
+            },
+            'cfbypass': {
+                title: '🛡️ CF BYPASS',
+                config: [
+                    { type: 'select', label: 'Bypass Method', options: ['ORIGIN SCAN', 'SSL RENEGOTIATION', 'HTTP/2 FLOOD', 'RANGE FLOOD'] },
+                    { type: 'number', label: 'Threads', default: '200', min: '50', max: '5000' },
+                    { type: 'number', label: 'Requests/Second', default: '1000', min: '100', max: '50000' },
+                    { type: 'checkbox', label: 'Follow redirects', default: 'true' },
+                    { type: 'checkbox', label: 'Bypass cache', default: 'true' }
+                ]
+            },
+            'pyrados2': {
+                title: '💥 PYRADOS PRO',
+                config: [
+                    { type: 'select', label: 'Attack Mode', options: ['SSL FLOOD', 'PROXY FLOOD', 'TOR FLOOD', 'MIXED'] },
+                    { type: 'number', label: 'Threads', default: '999', min: '100', max: '9999' },
+                    { type: 'number', label: 'Packet Rate', default: '10000', min: '1000', max: '100000' },
+                    { type: 'number', label: 'Duration', default: '900', min: '60', max: '10800' },
+                    { type: 'checkbox', label: 'Use proxies', default: 'true' },
+                    { type: 'checkbox', label: 'SSL renegotiation', default: 'true' }
+                ]
+            },
+            'glory': {
+                title: '👑 GLORY',
+                config: [
+                    { type: 'select', label: 'Amplification', options: ['DNS', 'NTP', 'SSDP', 'SNMP', 'CLDAP', 'MEMCACHED'] },
+                    { type: 'number', label: 'Amplification factor', default: '100', min: '10', max: '1000' },
+                    { type: 'number', label: 'Bandwidth (Mbps)', default: '1000', min: '100', max: '100000' },
+                    { type: 'number', label: 'Duration', default: '1800', min: '60', max: '21600' },
+                    { type: 'checkbox', label: 'Reflector scan', default: 'true' }
+                ]
+            }
+        };
+        
+        // Menu click handlers
+        document.querySelectorAll('.menu-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.menu-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                const method = this.dataset.method;
+                quantum.currentMethod = method;
+                
+                const config = methodConfigs[method];
+                document.getElementById('currentMethod').innerHTML = config.title;
+                
+                // Generate config panel
+                let html = '';
+                config.config.forEach(item => {
+                    if(item.type === 'select') {
+                        html += `<div class="config-item">
+                            <label>${item.label}</label>
+                            <select id="cfg_${item.label.replace(/\s+/g, '_')}">`;
+                        item.options.forEach(opt => {
+                            html += `<option value="${opt}">${opt}</option>`;
+                        });
+                        html += `</select></div>`;
+                    } else if(item.type === 'number') {
+                        html += `<div class="config-item">
+                            <label>${item.label}</label>
+                            <input type="number" id="cfg_${item.label.replace(/\s+/g, '_')}" 
+                                value="${item.default}" min="${item.min}" max="${item.max}">
+                        </div>`;
+                    } else if(item.type === 'checkbox') {
+                        html += `<div class="config-item">
+                            <label style="display: flex; align-items: center;">
+                                <input type="checkbox" id="cfg_${item.label.replace(/\s+/g, '_')}" ${item.default === 'true' ? 'checked' : ''}>
+                                <span style="margin-left: 8px;">${item.label}</span>
+                            </label>
+                        </div>`;
+                    } else if(item.type === 'text') {
+                        html += `<div class="config-item">
+                            <label>${item.label}</label>
+                            <input type="text" id="cfg_${item.label.replace(/\s+/g, '_')}" value="${item.default}">
+                        </div>`;
+                    }
+                });
+                
+                document.getElementById('configPanel').innerHTML = html;
+                quantum.log(`[METHOD] Loaded ${config.title} configuration`);
+            });
+        });
+        
+        // Attack handlers
+        document.getElementById('startAttack').addEventListener('click', function() {
+            const target = document.getElementById('targetUrl').value;
+            if(!target) {
+                quantum.log('[ERROR] No target specified!');
+                return;
+            }
+            
+            // Collect config
+            const config = {};
+            document.querySelectorAll('#configPanel input, #configPanel select').forEach(el => {
+                if(el.type === 'checkbox') {
+                    config[el.previousElementSibling?.innerText || el.id] = el.checked;
+                } else {
+                    const label = el.previousElementSibling?.innerText || el.id;
+                    config[label] = el.value;
+                }
+            });
+            
+            quantum.launchAttack(target, quantum.currentMethod, config);
+            quantum.log(`[LAUNCH] Attack started against ${target}`);
+        });
+        
+        document.getElementById('stopAttack').addEventListener('click', function() {
+            quantum.stopAll();
+        });
+        
+        document.getElementById('resolveBtn').addEventListener('click', function() {
+            const target = document.getElementById('targetUrl').value;
+            quantum.log(`[RESOLVE] Resolving ${target}...`);
+            setTimeout(() => {
+                const fakeIP = `${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
+                quantum.log(`[RESOLVE] ${target} → ${fakeIP} (Cloudflare bypassed)`);
+            }, 1000);
+        });
+        
+        // Auto-select first method
+        setTimeout(() => {
+            document.querySelector('.menu-card').click();
+        }, 500);
+        
+        // Random botnet updates
+        setInterval(() => {
+            quantum.log(`[BOTNET] ${Math.floor(Math.random()*1000)+500} new bots connected`, 'system');
+        }, 30000);
+        
+        // User-agent rotation display
+        setInterval(() => {
+            const uaTypes = ['Chrome', 'Firefox', 'Safari', 'Edge', 'Mobile', 'Bot'];
+            const randomUA = uaTypes[Math.floor(Math.random() * uaTypes.length)];
+            document.getElementById('uaInfo').innerHTML = `🔄 Rotating 1.5M+ User-Agents • Active: ${randomUA}`;
+        }, 2000);
+    </script>
+</body>
+</html>
